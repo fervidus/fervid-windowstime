@@ -5,6 +5,16 @@
 #
 # Parameters
 # ----------
+# @param [Hash] servers
+#   List of time servers
+# @param [Array] timezones
+#   List of timezones
+# @param [Optional[String]] timezone
+#    Timezone
+#    Default value: undef
+# @param [String] syncflag
+#    Sync flag
+#    Default value: 'local'
 #
 #
 # * 'servers'
@@ -48,15 +58,13 @@
 #
 
 class windowstime (
-  Optional[Hash] $servers,
-  Optional[Array] $timezones,
+  Hash $servers = {},
+  Array $timezones = [],
   Optional[String] $timezone = undef,
-  Optional[String] $syncflag = 'local',
+  String $syncflag = 'local',
 ) {
-
   $regvalue = maptoreg($servers)
   $normalized_timezone_fact = regsubst($facts['timezone'], 'Daylight', 'Standard')
-
   $synctype = $syncflag ? {
     'local' => 'NTP',
     'domain' => 'NT5DS',
@@ -96,5 +104,4 @@ class windowstime (
       }
     }
   }
-
 }
