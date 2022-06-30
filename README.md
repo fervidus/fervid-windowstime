@@ -10,6 +10,10 @@
 
 ## Description
 
+Fork of [ncorrare](https://github.com/ncorrare)'s original [module](https://github.com/ncorrare/windowstime) which appears to have been abandoned sometime in 2018. If author would like to resume, please notify.
+
+---
+
 This module configures NTP sync on Windows Servers. It's extremely useful on standalone instances not connected to AD, but can also be modified to sync from the AD domain where required by changing the syncflag setting from 'local' to 'domain'. It switches the W32time Service from triggered to running, so it's constantly verifying and syncing the clock. It can also configure the systems in the correct timezone.
 
 ## Setup

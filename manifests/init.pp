@@ -5,6 +5,16 @@
 #
 # Parameters
 # ----------
+# @param [Hash] servers
+#   List of time servers
+# @param [Array] timezones
+#   List of timezones
+# @param [Optional[String]] timezone
+#    Timezone
+#    Default value: undef
+# @param [String] syncflag
+#    Sync flag
+#    Default value: 'local'
 #
 #
 # * 'servers'
@@ -46,14 +56,15 @@
 #
 # Copyright 2016 Your name here, unless otherwise noted.
 #
+
 class windowstime (
-  Optional[Hash] $servers,
-  Optional[Array] $timezones,
+  Hash $servers = {},
+  Array $timezones = [],
   Optional[String] $timezone = undef,
-  Optional[String] $syncflag = 'local',
+  String $syncflag = 'local',
 ) {
   $regvalue = maptoreg($servers)
-
+  $normalized_timezone_fact = regsubst($facts['timezone'], 'Daylight', 'Standard')
   $synctype = $syncflag ? {
     'local' => 'NTP',
     'domain' => 'NT5DS',
@@ -86,9 +97,10 @@ class windowstime (
 
   if $timezone {
     validate_re($timezone, $timezones, 'The specified string is not a valid Timezone')
-    if $timezone != $facts['timezone'] {
+    if $timezone != $normalized_timezone_fact {
       $system32dir = $facts['os']['windows']['system32']
-      exec { "${system32dir}\\tzutil.exe /s ${timezone}":
+      exec { "${system32dir}\\tzutil.exe /s \"${timezone}\"":
+        notify => Exec['c:/Windows/System32/w32tm.exe /resync'],
       }
     }
   }
